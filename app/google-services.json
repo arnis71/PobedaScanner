@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "544335276771",
+    "firebase_url": "https://app-a2e9e.firebaseio.com",
+    "project_id": "app-a2e9e",
+    "storage_bucket": "app-a2e9e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544335276771:android:30817f2a83a708b8",
+        "android_client_info": {
+          "package_name": "ru.game.arnis.a2048"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544335276771-isa18ihml0ei95pmd3ki8pg5od6h7oqu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.game.arnis.a2048",
+            "certificate_hash": "BFA315B1342C2AFF47C073D268359999FFE491AD"
+          }
+        },
+        {
+          "client_id": "544335276771-nam2hn0ab87p1mosvvlmt1j0bnk47o17.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.game.arnis.a2048",
+            "certificate_hash": "904D0FEAFB52BEECEBD2E72D1FCC72A6A385A60F"
+          }
+        },
+        {
+          "client_id": "544335276771-p59hs72kgvbpdroro8j0cn1tn0v85vkd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH7av7jdrrzP2c0FmjUdIa8ibGRbFJJ6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544335276771-p59hs72kgvbpdroro8j0cn1tn0v85vkd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544335276771:android:392fa1a332175b23",
+        "android_client_info": {
+          "package_name": "ru.arnis.pobedascanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544335276771-3m2dhnj5093fjb8nb3uurn8q9tfja0bj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.arnis.pobedascanner",
+            "certificate_hash": "FD45E7E3D9156189BD3B836A840D3016AABF27FE"
+          }
+        },
+        {
+          "client_id": "544335276771-p59hs72kgvbpdroro8j0cn1tn0v85vkd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH7av7jdrrzP2c0FmjUdIa8ibGRbFJJ6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544335276771-p59hs72kgvbpdroro8j0cn1tn0v85vkd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

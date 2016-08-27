@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PobedaScanner</string>
+    <integer name="com_vk_sdk_AppId">5594968</integer>
+    <string-array name="intervals">
+        <item>1 раз в день</item>
+        <item>2 раза в день</item>
+        <item>3 раза в день</item>
+        <item>4 раза в день</item>
+    </string-array>
+</resources>

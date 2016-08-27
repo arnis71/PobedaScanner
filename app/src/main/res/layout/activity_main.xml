@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ru.arnis.pobedascanner.MainActivity"
+    android:background="#eeeeee"
+    android:id="@+id/main_layout">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:id="@+id/button_panel"
+        android:background="#64b5f6"
+        android:elevation="5dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/status"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:onClick="debugModeOn"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/spinner_desc"
+            android:text="Сканировать"
+            android:textColor="#f9f9f9"
+            android:textSize="17sp"/>
+        <Spinner
+            android:layout_toRightOf="@+id/spinner_desc"
+            android:layout_toEndOf="@+id/spinner_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingStart="10dp"
+            android:paddingLeft="10dp"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:id="@+id/spinner"
+            android:layout_alignParentBottom="true"/>
+
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:id="@+id/fab_base"
+            android:src="@drawable/fab"
+            android:layout_centerInParent="true"/>
+        <ImageView
+            android:id="@+id/fab_icon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/fab_play"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+    <TextView
+        android:elevation="5dp"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:id="@+id/text_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Прошлые предложения"
+        android:layout_below="@id/button_panel"
+        android:padding="5dp"
+        android:textSize="20sp"
+        android:textColor="#424242"/>
+
+
+    <ru.arnis.pobedascanner.BounceListView
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_below="@+id/text_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tabs"
+        android:divider="@android:color/transparent"></ru.arnis.pobedascanner.BounceListView>
+
+    <View
+        android:visibility="gone"
+        android:id="@+id/pre_lolipop_shadow"
+        android:layout_below="@+id/text_header"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/shade"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:id="@+id/dim_overlay"
+        android:elevation="10dp"/>
+
+
+</RelativeLayout>
