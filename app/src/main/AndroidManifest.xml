@@ -22,14 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".PobedaScannerService"/>
-        <receiver android:name=".AlertReceiver">
+        <service android:name=".services.PobedaScannerService"/>
+        <receiver android:name=".receviers.AlertReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".NetworkStateReceiver"
+        <receiver android:name=".receviers.NetworkStateReceiver"
             android:enabled="true"
             android:exported="true">
             <!--<intent-filter>-->

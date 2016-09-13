@@ -1,4 +1,4 @@
-package ru.arnis.pobedascanner;
+package ru.arnis.pobedascanner.other;
 
 /**
  * Created by arnis on 19/08/16.

@@ -82,14 +82,14 @@
         android:textColor="#424242"/>
 
 
-    <ru.arnis.pobedascanner.BounceListView
+    <ru.arnis.pobedascanner.other.BounceListView
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_below="@+id/text_header"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/tabs"
-        android:divider="@android:color/transparent"></ru.arnis.pobedascanner.BounceListView>
+        android:divider="@android:color/transparent"></ru.arnis.pobedascanner.other.BounceListView>
 
     <View
         android:visibility="gone"

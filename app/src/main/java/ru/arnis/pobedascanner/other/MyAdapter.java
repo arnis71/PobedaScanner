@@ -1,14 +1,10 @@
-package ru.arnis.pobedascanner;
+package ru.arnis.pobedascanner.other;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.util.Pair;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import ru.arnis.pobedascanner.R;
+import ru.arnis.pobedascanner.receviers.NetworkStateReceiver;
+import ru.arnis.pobedascanner.ImageLoader;
 
 /**
  * Created by arnis on 18/08/16.
@@ -105,7 +105,6 @@ public class MyAdapter extends BaseAdapter {
         postText.setText(posts.get(i).getText());
         postDate.setText(posts.get(i).getTimeStamp());
 //        Log.d("happycache", "cache "+Integer.toString(ImageLoader.cachedPostImages.size()) + " i " + Integer.toString(i));
-
         if (ImageLoader.cachedPostImages.size()>i&&ImageLoader.cachedPostImages.get(i)!=null){
             postImage.setImageBitmap(ImageLoader.cachedPostImages.get(i));
         } else {
@@ -113,8 +112,6 @@ public class MyAdapter extends BaseAdapter {
             if (NetworkStateReceiver.connected)
                 ImageLoader.requestPostponedImage(postImage, i);
         }
-
-
         return view;
     }
 }

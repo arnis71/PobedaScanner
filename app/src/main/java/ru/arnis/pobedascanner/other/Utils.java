@@ -1,4 +1,4 @@
-package ru.arnis.pobedascanner;
+package ru.arnis.pobedascanner.other;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import ru.arnis.pobedascanner.R;
 
 /**
  * Created by arnis on 20/08/16.

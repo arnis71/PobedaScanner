@@ -1,17 +1,14 @@
 package ru.arnis.pobedascanner;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
+import ru.arnis.pobedascanner.other.Post;
 
 /**
  * Created by arnis on 18/08/16.
@@ -46,15 +43,13 @@ public class ImageLoader extends AsyncTask<Void, Void, Bitmap> {
             cachedPostImages.add(null);
             return;
         }
-        Bitmap bitmap = Bitmap.createScaledBitmap(result,MainActivity.width-40,(MainActivity.width-40)/2,false);
+        Bitmap bitmap = Bitmap.createScaledBitmap(result, MainActivity.width-40,(MainActivity.width-40)/2,false);
         cachedPostImages.add(bitmap);
     }
 
     public static void cacheImages(ArrayList<Post> posts){
-            for (Post post:posts){
+            for (Post post:posts)
                 new ImageLoader(post.getImageURL()).execute();
-            }
-
     }
 
     public static void requestPostponedImage(final ImageView postImage, final int index) {

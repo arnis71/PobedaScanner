@@ -12,7 +12,6 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,13 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKCallback;
-import com.vk.sdk.VKScope;
-import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
-import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
@@ -45,15 +39,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import ru.arnis.pobedascanner.other.BounceListView;
+import ru.arnis.pobedascanner.other.MyAdapter;
+import ru.arnis.pobedascanner.other.Post;
+import ru.arnis.pobedascanner.other.Utils;
+import ru.arnis.pobedascanner.receviers.AlertReceiver;
+import ru.arnis.pobedascanner.receviers.NetworkStateReceiver;
+import ru.arnis.pobedascanner.services.Firebase;
+
 public class MainActivity extends AppCompatActivity {
 
-    public static String pobedaVkId = "-56159619";//"-79459310";
+    public static String pobedaVkId = "-79459310";
     private int postCount;
     private BounceListView postsList;
     private ArrayList<Post> posts;
@@ -64,11 +64,12 @@ public class MainActivity extends AppCompatActivity {
     private NetworkStateReceiver receiver;
     private boolean spinnerInit;
 
-    public static final String DB2 = "post_count";
+    public static final String PREFS = "prefs";
     public static final String POSTS = "posts";
     public static final String BOOL_SCANNING = "bool";
-    public static final String INTERVAL = "inter";
-    private boolean spawningClouds;
+    public static final String INTERVAL = "interval";
+    public static final int ALARM_FLAG = 1;
+    private boolean isSpawningClouds;
     private DBhelper dbHelper;
     private ImageButton fab_base;
     private RelativeLayout mainLayout;
@@ -76,34 +77,28 @@ public class MainActivity extends AppCompatActivity {
     private View dimOverlay;
     private ImageView fab_icon;
     private Firebase analytics;
-    private boolean debugModeOn=false;
+    private boolean debugModeOn;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DisplayMetrics display = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(display);
-        width = display.widthPixels;
-
         mainLayout = (RelativeLayout)findViewById(R.id.main_layout);
         dimOverlay = findViewById(R.id.dim_overlay);
         panel = (RelativeLayout)findViewById(R.id.button_panel);
         postsList = (BounceListView) findViewById(R.id.tabs);
-        posts = new ArrayList<>();
         fab_base = (ImageButton) findViewById(R.id.fab_base);
         fab_icon = (ImageView) findViewById(R.id.fab_icon);
 
         analytics = new Firebase(this);
+        posts = new ArrayList<>();
 
-        postsList.setVerticalScrollBarEnabled(false);
-
+        getDisplayWidth();
         loadInterval();
         setUpSpinner();
-        shadeCompatiability();
 
-
+        shadeCompat();
 
         fab_base.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -123,10 +118,15 @@ public class MainActivity extends AppCompatActivity {
                     }
 //                    Log.d("happy", "ALARM " +alarmUp);
                 }
-
                 return true;
             }
         });
+    }
+
+    private void getDisplayWidth() {
+        DisplayMetrics display = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(display);
+        width = display.widthPixels;
     }
 
     private void setUpSpinner() {
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadInterval() {
-        SharedPreferences preferences = getSharedPreferences(DB2,MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(PREFS,MODE_PRIVATE);
         scanning_interval = preferences.getInt(INTERVAL,1);
     }
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             receiver = null;
         }
         analytics.createBundle().putValue(FirebaseAnalytics.Param.VALUE,scanning_interval).logEvent("scanning_interval");
-        getSharedPreferences(DB2,MODE_PRIVATE).edit().putInt(INTERVAL,scanning_interval).apply();
+        getSharedPreferences(PREFS,MODE_PRIVATE).edit().putInt(INTERVAL,scanning_interval).apply();
 
     }
 
@@ -187,11 +187,11 @@ public class MainActivity extends AppCompatActivity {
         postCount = getPostCount();
         if (checkAlarmUP()){
             spawnClouds();
-            fab_icon.setImageResource(R.drawable.fab_pause);
+            Utils.fabIconAnim(fab_icon,true);
         }
         if (checkInternet()!=null){
             downloadPostCount();
-            int count = postCount-getSharedPreferences(DB2,MODE_PRIVATE).getInt(POSTS,0);
+            int count = postCount-getSharedPreferences(PREFS,MODE_PRIVATE).getInt(POSTS,0);
             if (count>0)
                 downloadPosts(count);
             if (count<=0){
@@ -226,14 +226,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-//        ImageLoader.cachedPostImages.clear();             UNCOMMENT IF OUTOFMEMMORY
+        ImageLoader.cachedPostImages.clear();
         if (receiver!=null)
             unregisterReceiver(receiver);
         super.onDestroy();
     }
 
     private void showDialog() {
-        final SharedPreferences preferences = getSharedPreferences(DB2,MODE_PRIVATE);
+        final SharedPreferences preferences = getSharedPreferences(PREFS,MODE_PRIVATE);
         if (!preferences.getBoolean(BOOL_SCANNING,false)){
             analytics.createBundle().putString(FirebaseAnalytics.Param.ITEM_NAME,"show").logEvent("dialog");
             View view = LayoutInflater.from(this).inflate(R.layout.dialog_window,null);
@@ -265,14 +265,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkAlarmUP() {
-        alarmUp = (PendingIntent.getBroadcast(this, 1,
+        alarmUp = (PendingIntent.getBroadcast(this, ALARM_FLAG,
                 new Intent(this,AlertReceiver.class),
                 PendingIntent.FLAG_NO_CREATE) != null);
 //        Log.d("happy", "ALARM " +alarmUp);
         return alarmUp;
     }
 
-    private void shadeCompatiability() {
+    private void shadeCompat() {
         if (Build.VERSION.SDK_INT<= Build.VERSION_CODES.LOLLIPOP){
             View shade1 = findViewById(R.id.pre_lolipop_shadow);
             shade1.setVisibility(View.VISIBLE);
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int getPostCount() {
-        SharedPreferences preferences = getSharedPreferences(DB2,MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(PREFS,MODE_PRIVATE);
         return preferences.getInt(POSTS,0);
     }
 
@@ -325,44 +325,25 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void writeToFile(String data,Context context) {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("json.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-    }
-
     private void downloadPosts(int count) {
-        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID,pobedaVkId,VKApiConst.COUNT,10));
+        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID,pobedaVkId,VKApiConst.COUNT,count));
         request.executeSyncWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
-//                System.out.println(response.responseString);
-                writeToFile(response.responseString,getApplicationContext());
-                int extraIfPinned=-1;
-                boolean skip=false;
+                System.out.println(response.responseString);
                 try {
                     JSONObject resp = (JSONObject)response.json.get("response");
                     JSONArray jsonPosts = (JSONArray)resp.get("items");
-                    for (int i = 0; i < jsonPosts.length()+extraIfPinned; i++) {
+                    for (int i = 0; i < jsonPosts.length(); i++) {
                         JSONObject jsonPost = (JSONObject) jsonPosts.get(i);
                         String text = jsonPost.getString("text");
-                    if (jsonPost.has("is_pinned")){
-                        extraIfPinned=0;
-                        i++;
-                        skip=true;
-                    }
-                        if (checkPostForDeals(text)&&!skip){
-                            String url;
+                        if (checkPostForDeals(text)){
+                            String url = null;
                             if (jsonPost.has("attachments")){
                                 JSONArray jsonPhoto = (JSONArray) jsonPost.get("attachments");
                                 JSONObject photos = (JSONObject)((JSONObject)(jsonPhoto.get(0))).get("photo");
                                 url = photos.getString("photo_807");
-                            } else url = null;
+                            }
                             Post post = new Post(text,url,Utils.getDateFromMilis(jsonPost.getString("date")));
                             posts.add(post);
                         }
@@ -386,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
     private void initListView(){
         MyAdapter myAdapter = new MyAdapter(posts,getApplicationContext());
         postsList.setAdapter(myAdapter);
+        postsList.setVerticalScrollBarEnabled(false);
     }
 
     private void downloadPostCount(){
@@ -406,12 +388,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void savePostCount(){
-        SharedPreferences.Editor editor = getSharedPreferences(DB2,MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS,MODE_PRIVATE).edit();
         editor.putInt(POSTS,postCount).apply();
     }
 
     private void setAlarm(int interval) {
-
         analytics.createBundle().putString(FirebaseAnalytics.Param.ITEM_NAME,"start").logEvent("scanning");
 
         Utils.fabIconAnim(fab_icon,true);
@@ -421,23 +402,22 @@ public class MainActivity extends AppCompatActivity {
 
         Long alertTime = new GregorianCalendar().getTimeInMillis();
         Intent intent = new Intent(this,AlertReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(this,1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(this,ALARM_FLAG,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,alertTime,/*10000*/interval,alarmIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,alertTime,interval,alarmIntent);
 //        Log.d("happy", "ALARM SET FOR "+Integer.toString(scanning_interval));
     }
 
     private void cancelAlarm(){
-
         analytics.createBundle().putString(FirebaseAnalytics.Param.ITEM_NAME,"cancel").logEvent("scanning");
 
         Utils.fabIconAnim(fab_icon,false);
         alarmUp=false;
-        spawningClouds=false;
+        isSpawningClouds =false;
 
         Intent intent = new Intent(this, AlertReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent, 0);
+        PendingIntent sender = PendingIntent.getBroadcast(this, ALARM_FLAG, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         alarmManager.cancel(sender);
@@ -445,8 +425,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void spawnClouds(){
-        if (!spawningClouds) {
-            spawningClouds = true;
+        if (!isSpawningClouds) {
+            isSpawningClouds = true;
             final Random rnd = new Random();
             new Thread(new Runnable() {
                 @Override
@@ -486,7 +466,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
 
     public void debugModeOn(View view) {
         if (debugModeOn){

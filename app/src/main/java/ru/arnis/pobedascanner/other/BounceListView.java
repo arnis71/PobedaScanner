@@ -1,4 +1,4 @@
-package ru.arnis.pobedascanner;
+package ru.arnis.pobedascanner.other;
 
 import android.content.Context;
 import android.util.AttributeSet;

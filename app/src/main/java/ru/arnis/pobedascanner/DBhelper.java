@@ -6,9 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import ru.arnis.pobedascanner.other.Post;
 
 /**
  * Created by arnis on 19/08/16.
@@ -49,18 +50,6 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_POSTS);
         onCreate(db);
     }
-
-//    public void addPost(Post post){
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(COLUMN_TEXT,post.getText());
-//        contentValues.put(COLUMN_IMAGE_URL,post.getImageURL());
-//        SQLiteDatabase db = getWritableDatabase();
-////        db.beginTransaction();
-//        db.insert(TABLE_POSTS,null,contentValues);
-////        db.setTransactionSuccessful();
-////        db.endTransaction();
-//        db.close();
-//    }
 
     public void addPosts(ArrayList<Post> posts){
         Collections.reverse(posts);
